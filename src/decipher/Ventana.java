@@ -5,8 +5,15 @@
  */
 package decipher;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
-import javax.swing.text.DocumentFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.PlainDocument;
 
 /**
@@ -49,6 +56,7 @@ public class Ventana extends javax.swing.JFrame {
         guardarB = new javax.swing.JButton();
         texto = new javax.swing.JTextField();
         tipoL = new javax.swing.JLabel();
+        cargarB = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -87,14 +95,24 @@ public class Ventana extends javax.swing.JFrame {
 
         tipoL.setText("Longitud:");
 
+        cargarB.setText("Cargar");
+        cargarB.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cargarBActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(33, 33, 33)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(guardarB)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(cargarB)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(guardarB))
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(layout.createSequentialGroup()
                             .addGap(20, 20, 20)
@@ -146,7 +164,9 @@ public class Ventana extends javax.swing.JFrame {
                         .addGap(98, 98, 98)
                         .addComponent(decifrarB)))
                 .addGap(40, 40, 40)
-                .addComponent(guardarB)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(guardarB)
+                    .addComponent(cargarB))
                 .addGap(41, 41, 41))
         );
 
@@ -198,6 +218,29 @@ public class Ventana extends javax.swing.JFrame {
         
     }//GEN-LAST:event_decifrarBActionPerformed
 
+    private void cargarBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cargarBActionPerformed
+        JFileChooser jc = new JFileChooser();
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("Solo .txt", "txt");
+        jc.setFileFilter(filter);
+        int op = jc.showOpenDialog(this);
+        if(op == JFileChooser.APPROVE_OPTION){
+            try {
+                File f = jc.getSelectedFile();
+                Scanner scan = new Scanner(f);
+                String info ="";
+                while(scan.hasNext()){
+                    String linea = scan.nextLine();
+                    info+=(linea);
+                }
+                cifredJT.setText(info);
+            } catch (FileNotFoundException ex) {
+                Logger.getLogger(Ventana.class.getName()).log(Level.SEVERE, null, ex);
+            }
+           
+        }
+        
+    }//GEN-LAST:event_cargarBActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -234,6 +277,7 @@ public class Ventana extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton cargarB;
     private javax.swing.JComboBox<String> cifradoCB;
     private javax.swing.JTextArea cifredJT;
     private javax.swing.JButton decifrarB;
