@@ -7,12 +7,20 @@ package decipher;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
+import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.Key;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.PlainDocument;
 
@@ -25,13 +33,18 @@ public class Ventana extends javax.swing.JFrame {
     /**
      * Creates new form Ventana
      */
-    
     private String op;
-    
+    private File llavePublica;
+    private File llavePrivada;
+
     public Ventana() {
         initComponents();
         PlainDocument doc = (PlainDocument) texto.getDocument();
         doc.setDocumentFilter(new MyIntFilter());
+        llavePuB.setVisible(false);
+        llavePriB.setVisible(false);
+        privadaTF.setVisible(false);
+        llavePL.setVisible(false);
     }
 
     /**
@@ -43,131 +56,162 @@ public class Ventana extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jScrollPane1 = new javax.swing.JScrollPane();
-        cifredJT = new javax.swing.JTextArea();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        decifredJT = new javax.swing.JTextArea();
-        jLabel1 = new javax.swing.JLabel();
-        cifradoCB = new javax.swing.JComboBox<>();
-        jLabel2 = new javax.swing.JLabel();
-        decifrarB = new javax.swing.JButton();
-        jLabel3 = new javax.swing.JLabel();
+        jPanel1 = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
         guardarB = new javax.swing.JButton();
         texto = new javax.swing.JTextField();
         tipoL = new javax.swing.JLabel();
         cargarB = new javax.swing.JButton();
+        llavePL = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        cifredJT = new javax.swing.JTextArea();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        decifredJT = new javax.swing.JTextArea();
+        cifradoCB = new javax.swing.JComboBox<>();
+        jLabel2 = new javax.swing.JLabel();
+        decifrarB = new javax.swing.JButton();
+        textoCifrado = new javax.swing.JLabel();
+        llavePuB = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
+        llavePriB = new javax.swing.JButton();
+        privadaTF = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        cifredJT.setColumns(20);
-        cifredJT.setRows(5);
-        jScrollPane1.setViewportView(cifredJT);
+        jPanel1.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel1.setForeground(new java.awt.Color(255, 255, 255));
+        jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        decifredJT.setColumns(20);
-        decifredJT.setRows(5);
-        jScrollPane2.setViewportView(decifredJT);
-
-        jLabel1.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
-        jLabel1.setText("Descifrador de textos");
-
-        cifradoCB.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Caesar", "Vigenere" }));
-        cifradoCB.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                cifradoCBItemStateChanged(evt);
-            }
-        });
-
-        jLabel2.setText("Tipo de cifrado");
-
-        decifrarB.setText("Descifar");
-        decifrarB.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                decifrarBActionPerformed(evt);
-            }
-        });
-
-        jLabel3.setText("Textro Cifrado");
-
+        jLabel4.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
+        jLabel4.setForeground(new java.awt.Color(0, 0, 0));
         jLabel4.setText("Texto Decifrado");
+        jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(634, 197, -1, -1));
 
+        guardarB.setBackground(new java.awt.Color(206, 121, 40));
+        guardarB.setForeground(new java.awt.Color(0, 0, 0));
+        guardarB.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/download.png"))); // NOI18N
         guardarB.setText("Guardar");
+        jPanel1.add(guardarB, new org.netbeans.lib.awtextra.AbsoluteConstraints(557, 455, 120, -1));
 
+        texto.setBackground(new java.awt.Color(255, 255, 255));
+        texto.setForeground(new java.awt.Color(0, 0, 0));
+        jPanel1.add(texto, new org.netbeans.lib.awtextra.AbsoluteConstraints(566, 70, 134, -1));
+
+        tipoL.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        tipoL.setForeground(new java.awt.Color(0, 0, 0));
         tipoL.setText("Longitud:");
+        jPanel1.add(tipoL, new org.netbeans.lib.awtextra.AbsoluteConstraints(408, 73, -1, -1));
 
+        cargarB.setBackground(new java.awt.Color(206, 121, 40));
+        cargarB.setForeground(new java.awt.Color(0, 0, 0));
+        cargarB.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/upload.png"))); // NOI18N
         cargarB.setText("Cargar");
         cargarB.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cargarBActionPerformed(evt);
             }
         });
+        jPanel1.add(cargarB, new org.netbeans.lib.awtextra.AbsoluteConstraints(104, 455, 133, -1));
+
+        llavePL.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        llavePL.setForeground(new java.awt.Color(0, 0, 0));
+        llavePL.setText("Llave privada");
+        jPanel1.add(llavePL, new org.netbeans.lib.awtextra.AbsoluteConstraints(408, 124, -1, -1));
+
+        jScrollPane1.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+
+        cifredJT.setBackground(new java.awt.Color(255, 255, 255));
+        cifredJT.setColumns(20);
+        cifredJT.setForeground(new java.awt.Color(0, 0, 0));
+        cifredJT.setRows(5);
+        jScrollPane1.setViewportView(cifredJT);
+
+        jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(104, 239, 289, 198));
+
+        jScrollPane2.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+
+        decifredJT.setBackground(new java.awt.Color(255, 255, 255));
+        decifredJT.setColumns(20);
+        decifredJT.setForeground(new java.awt.Color(0, 0, 0));
+        decifredJT.setRows(5);
+        jScrollPane2.setViewportView(decifredJT);
+
+        jPanel1.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(557, 239, 266, 198));
+
+        cifradoCB.setBackground(new java.awt.Color(255, 255, 255));
+        cifradoCB.setForeground(new java.awt.Color(0, 0, 0));
+        cifradoCB.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Caesar", "Vigenere", "RSA", "AES", "TwoFish" }));
+        cifradoCB.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                cifradoCBItemStateChanged(evt);
+            }
+        });
+        jPanel1.add(cifradoCB, new org.netbeans.lib.awtextra.AbsoluteConstraints(215, 70, 112, -1));
+
+        jLabel2.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        jLabel2.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel2.setText("Tipo de cifrado");
+        jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 73, 116, -1));
+
+        decifrarB.setBackground(new java.awt.Color(206, 121, 40));
+        decifrarB.setForeground(new java.awt.Color(0, 0, 0));
+        decifrarB.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/decipher.png"))); // NOI18N
+        decifrarB.setText("Descifar");
+        decifrarB.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                decifrarBActionPerformed(evt);
+            }
+        });
+        jPanel1.add(decifrarB, new org.netbeans.lib.awtextra.AbsoluteConstraints(413, 325, 123, -1));
+
+        textoCifrado.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
+        textoCifrado.setForeground(new java.awt.Color(0, 0, 0));
+        textoCifrado.setText("Textro Cifrado");
+        jPanel1.add(textoCifrado, new org.netbeans.lib.awtextra.AbsoluteConstraints(181, 197, -1, -1));
+
+        llavePuB.setBackground(new java.awt.Color(206, 121, 40));
+        llavePuB.setForeground(new java.awt.Color(0, 0, 0));
+        llavePuB.setText("Selecc");
+        llavePuB.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                llavePuBActionPerformed(evt);
+            }
+        });
+        jPanel1.add(llavePuB, new org.netbeans.lib.awtextra.AbsoluteConstraints(765, 67, 108, -1));
+
+        jLabel1.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel1.setText("Descifrador de textos");
+        jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(358, 6, -1, -1));
+
+        llavePriB.setBackground(new java.awt.Color(206, 121, 40));
+        llavePriB.setForeground(new java.awt.Color(0, 0, 0));
+        llavePriB.setText("Selecc");
+        llavePriB.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                llavePriBActionPerformed(evt);
+            }
+        });
+        jPanel1.add(llavePriB, new org.netbeans.lib.awtextra.AbsoluteConstraints(765, 117, 108, -1));
+
+        privadaTF.setEditable(false);
+        jPanel1.add(privadaTF, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 120, 130, -1));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(33, 33, 33)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(cargarB)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(guardarB))
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(layout.createSequentialGroup()
-                            .addGap(20, 20, 20)
-                            .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGap(67, 67, 67)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(jLabel1)
-                                .addComponent(cifradoCB, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGroup(layout.createSequentialGroup()
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 252, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGap(18, 18, 18)
-                            .addComponent(decifrarB)
-                            .addGap(18, 18, 18)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(tipoL)
-                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 271, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                .addContainerGap(41, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(108, 108, 108)
-                .addComponent(jLabel3)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(texto, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel4))
-                .addGap(92, 92, 92))
+                .addContainerGap()
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 985, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1)
-                .addGap(35, 35, 35)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(cifradoCB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel2)
-                    .addComponent(texto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(tipoL))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 34, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
-                    .addComponent(jLabel4))
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(26, 26, 26)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 191, Short.MAX_VALUE)
-                            .addComponent(jScrollPane1)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(98, 98, 98)
-                        .addComponent(decifrarB)))
-                .addGap(40, 40, 40)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(guardarB)
-                    .addComponent(cargarB))
-                .addGap(41, 41, 41))
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 559, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -177,45 +221,118 @@ public class Ventana extends javax.swing.JFrame {
         String op = (String) cifradoCB.getSelectedItem();
         this.op = op;
         PlainDocument doc = (PlainDocument) texto.getDocument();
-        switch(op){
+        switch (op) {
             case "Caesar":
                 tipoL.setText("Longitud");
                 texto.setText("");
                 doc.setDocumentFilter(new MyIntFilter());
+                llavePL.setVisible(false);
+                privadaTF.setVisible(false);
+                llavePriB.setVisible(false);
+                llavePuB.setVisible(false);
+                texto.setEditable(true);
                 break;
-                
+
             case "Vigenere":
-                
+
                 tipoL.setText("Clave");
                 texto.setText("");
                 doc.setDocumentFilter(new MyStringFilter());
+                llavePL.setVisible(false);
+                privadaTF.setVisible(false);
+                llavePriB.setVisible(false);
+                llavePuB.setVisible(false);
+                texto.setEditable(true);
+                break;
+                
+                
+            case "RSA": 
+                tipoL.setText("Llave publica");
+                texto.setText("");
+                llavePL.setVisible(true);
+                privadaTF.setVisible(true);
+                llavePriB.setVisible(true);
+                llavePuB.setVisible(true);
+                texto.setEditable(false);
+                doc.setDocumentFilter(new MyStringFilter());
+                break;
+            
+            case "AES":
+                tipoL.setText("Llave");
+                texto.setText("");
+                llavePL.setVisible(false);
+                privadaTF.setVisible(false);
+                llavePriB.setVisible(false);
+                llavePuB.setVisible(true);
+                texto.setEditable(false);
+                texto = new JTextField();
+                
                 break;
         }
     }//GEN-LAST:event_cifradoCBItemStateChanged
 
     private void decifrarBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_decifrarBActionPerformed
         String k = cifredJT.getText();
-        switch(op){
+        switch (op) {
             case "Caesar":
                 int l = Integer.parseInt(texto.getText());
-                if(l<=26){
+                if (l <= 26) {
                     String dec = Caesar.decipher(k, l);
                     decifredJT.setText(dec);
-                }
-                else{
-                    JOptionPane.showMessageDialog(this,"Escriba un numero valido [0-26]",
-                            "Error",JOptionPane.ERROR_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Escriba un numero valido [0-26]",
+                            "Error", JOptionPane.ERROR_MESSAGE);
                     texto.setText("");
                 }
                 break;
-                
+
             case "Vigenere":
                 String key = texto.getText();
                 String dec = Vignere.decipher(k, key);
                 decifredJT.setText(dec);
                 break;
+
+            case "RSA":
+                if(llavePublica != null && llavePrivada != null){
+                    try {
+                        String mensaje = RSA2.decipher(k, llavePublica.getAbsolutePath() , llavePrivada.getAbsolutePath());
+                        decifredJT.setText(mensaje);
+                    } catch (IOException ex) {
+                        Logger.getLogger(Ventana.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (NoSuchAlgorithmException ex) {
+                        Logger.getLogger(Ventana.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (InvalidKeySpecException ex) {
+                        Logger.getLogger(Ventana.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (NoSuchPaddingException ex) {
+                        Logger.getLogger(Ventana.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (InvalidKeyException ex) {
+                        Logger.getLogger(Ventana.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (IllegalBlockSizeException ex) {
+                        Logger.getLogger(Ventana.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (BadPaddingException ex) {
+                        Logger.getLogger(Ventana.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }                
+            break;
+            
+            case "AES":
+                if(llavePublica != null){
+                    try {
+                            Key llave = AES.fileToKey(llavePublica);
+                            String mensaje = AES.decrypt(k, llave);
+                            decifredJT.setText(mensaje);
+                    } catch (FileNotFoundException ex) {
+                        Logger.getLogger(Ventana.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (Exception ex) {
+                        Logger.getLogger(Ventana.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+                break;
+
+            
+            
         }
-        
+
     }//GEN-LAST:event_decifrarBActionPerformed
 
     private void cargarBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cargarBActionPerformed
@@ -223,23 +340,51 @@ public class Ventana extends javax.swing.JFrame {
         FileNameExtensionFilter filter = new FileNameExtensionFilter("Solo .txt", "txt");
         jc.setFileFilter(filter);
         int op = jc.showOpenDialog(this);
-        if(op == JFileChooser.APPROVE_OPTION){
+        if (op == JFileChooser.APPROVE_OPTION) {
             try {
                 File f = jc.getSelectedFile();
                 Scanner scan = new Scanner(f);
-                String info ="";
-                while(scan.hasNext()){
+                String info = "";
+                while (scan.hasNext()) {
                     String linea = scan.nextLine();
-                    info+=(linea);
+                    info += (linea);
                 }
                 cifredJT.setText(info);
             } catch (FileNotFoundException ex) {
                 Logger.getLogger(Ventana.class.getName()).log(Level.SEVERE, null, ex);
             }
-           
+
+        }
+
+    }//GEN-LAST:event_cargarBActionPerformed
+
+    private void llavePuBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_llavePuBActionPerformed
+        JFileChooser jc = new JFileChooser();
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("Solo .pub", "pub");
+        jc.setFileFilter(filter);
+        int i = jc.showOpenDialog(this);
+        if (i == JFileChooser.APPROVE_OPTION){
+            File f = jc.getSelectedFile();
+            llavePublica = f;
+            texto.setText(f.getAbsolutePath());
+            System.out.println(f.getAbsolutePath());
         }
         
-    }//GEN-LAST:event_cargarBActionPerformed
+    }//GEN-LAST:event_llavePuBActionPerformed
+
+    private void llavePriBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_llavePriBActionPerformed
+        JFileChooser jc = new JFileChooser();
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("Solo .pri", "pri");
+        jc.setFileFilter(filter);
+        int i = jc.showOpenDialog(this);
+        if (i == JFileChooser.APPROVE_OPTION){
+            File f = jc.getSelectedFile();
+            llavePrivada = f;
+            privadaTF.setText(f.getAbsolutePath());
+            System.out.println(f.getAbsolutePath());
+        }
+        
+    }//GEN-LAST:event_llavePriBActionPerformed
 
     /**
      * @param args the command line arguments
@@ -285,11 +430,16 @@ public class Ventana extends javax.swing.JFrame {
     private javax.swing.JButton guardarB;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JLabel llavePL;
+    private javax.swing.JButton llavePriB;
+    private javax.swing.JButton llavePuB;
+    private javax.swing.JTextField privadaTF;
     private javax.swing.JTextField texto;
+    private javax.swing.JLabel textoCifrado;
     private javax.swing.JLabel tipoL;
     // End of variables declaration//GEN-END:variables
 }
