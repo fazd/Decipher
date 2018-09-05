@@ -5,8 +5,10 @@
  */
 package decipher;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.Key;
@@ -45,8 +47,19 @@ public class Ventana extends javax.swing.JFrame {
         llavePriB.setVisible(false);
         privadaTF.setVisible(false);
         llavePL.setVisible(false);
+        op = "Caesar";
+        cifredJT.setLineWrap(true);
+        decifredJT.setLineWrap(true);
     }
 
+    public void Write(File f) throws IOException{
+        BufferedWriter bf = new BufferedWriter(new FileWriter(f));
+        String text = decifredJT.getText();
+        bf.write(text);
+        bf.close();
+    }
+    
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -91,6 +104,11 @@ public class Ventana extends javax.swing.JFrame {
         guardarB.setForeground(new java.awt.Color(0, 0, 0));
         guardarB.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/download.png"))); // NOI18N
         guardarB.setText("Guardar");
+        guardarB.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                guardarBActionPerformed(evt);
+            }
+        });
         jPanel1.add(guardarB, new org.netbeans.lib.awtextra.AbsoluteConstraints(557, 455, 120, -1));
 
         texto.setBackground(new java.awt.Color(255, 255, 255));
@@ -349,7 +367,10 @@ public class Ventana extends javax.swing.JFrame {
                     String linea = scan.nextLine();
                     info += (linea);
                 }
+                //info = info.replaceAll("(?!\\r)\\n", "\r\n");
                 cifredJT.setText(info);
+               
+                //cifredJT.append(info);
             } catch (FileNotFoundException ex) {
                 Logger.getLogger(Ventana.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -385,6 +406,23 @@ public class Ventana extends javax.swing.JFrame {
         }
         
     }//GEN-LAST:event_llavePriBActionPerformed
+
+    private void guardarBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_guardarBActionPerformed
+        JFileChooser jc = new JFileChooser();
+        int i = jc.showSaveDialog(this);
+        if(i == JFileChooser.APPROVE_OPTION){
+            try {
+                String path = jc.getCurrentDirectory().getAbsolutePath();
+                path+= "\\"+"decifrado.txt";
+                File f = new File(path);
+                Write(f);
+                JOptionPane.showMessageDialog(this,"El archivo se ha guardado exitosamente");
+            } catch (IOException ex) {
+                Logger.getLogger(Ventana.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        
+    }//GEN-LAST:event_guardarBActionPerformed
 
     /**
      * @param args the command line arguments
