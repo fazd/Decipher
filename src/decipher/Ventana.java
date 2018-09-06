@@ -38,6 +38,7 @@ public class Ventana extends javax.swing.JFrame {
     private String op;
     private File llavePublica;
     private File llavePrivada;
+    private File archivoEn;
 
     public Ventana() {
         initComponents();
@@ -158,7 +159,7 @@ public class Ventana extends javax.swing.JFrame {
 
         cifradoCB.setBackground(new java.awt.Color(255, 255, 255));
         cifradoCB.setForeground(new java.awt.Color(0, 0, 0));
-        cifradoCB.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Caesar", "Vigenere", "RSA", "AES", "TwoFish" }));
+        cifradoCB.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Caesar", "Vigenere", "RSA", "AES", "BlowFish" }));
         cifradoCB.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 cifradoCBItemStateChanged(evt);
@@ -286,6 +287,18 @@ public class Ventana extends javax.swing.JFrame {
                 texto = new JTextField();
                 
                 break;
+                
+            case "BlowFish":
+                tipoL.setText("Clave");
+                texto.setText("");
+                doc.setDocumentFilter(new MyStringFilter());
+                llavePL.setVisible(false);
+                privadaTF.setVisible(false);
+                llavePriB.setVisible(false);
+                llavePuB.setVisible(false);
+                texto.setEditable(true);
+                break;
+                
         }
     }//GEN-LAST:event_cifradoCBItemStateChanged
 
@@ -306,14 +319,25 @@ public class Ventana extends javax.swing.JFrame {
 
             case "Vigenere":
                 String key = texto.getText();
-                String dec = Vignere.decipher(k, key);
+                String dec = "";
+                if(archivoEn != null){
+                    try {
+                        dec = Vignere.decipher(archivoEn, key);
+                    } catch (FileNotFoundException ex) {
+                        Logger.getLogger(Ventana.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+                else{
+                    dec = Vignere.decipher(k, key);
+                
+                }
                 decifredJT.setText(dec);
                 break;
 
             case "RSA":
                 if(llavePublica != null && llavePrivada != null){
                     try {
-                        String mensaje = RSA2.decipher(k, llavePublica.getAbsolutePath() , llavePrivada.getAbsolutePath());
+                        String mensaje = RSA2.decipher(archivoEn, llavePublica.getAbsolutePath() , llavePrivada.getAbsolutePath());
                         decifredJT.setText(mensaje);
                     } catch (IOException ex) {
                         Logger.getLogger(Ventana.class.getName()).log(Level.SEVERE, null, ex);
@@ -347,6 +371,18 @@ public class Ventana extends javax.swing.JFrame {
                 }
                 break;
 
+            case "BlowFish":
+                String ke = texto.getText();
+        
+                try {
+                    String message = BlowFish.decrypt(k, ke);
+                    decifredJT.setText(message);
+                } catch (Exception ex) {
+                    Logger.getLogger(Ventana.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                break;
+        
+                
             
             
         }
@@ -369,6 +405,7 @@ public class Ventana extends javax.swing.JFrame {
                 }
                 //info = info.replaceAll("(?!\\r)\\n", "\r\n");
                 cifredJT.setText(info);
+                archivoEn = f;
                
                 //cifredJT.append(info);
             } catch (FileNotFoundException ex) {

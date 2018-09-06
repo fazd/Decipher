@@ -30,12 +30,13 @@ public class Vignere {
         for(String s: vec){
             int n = s.length();
             for(int i = 0; i < n; i++){
-                int car = 48+ ((s.charAt(i) + key.charAt(c) )%74);
-                
-                //System.out.println("car:"+car);
+                int car = (s.charAt(i) - 33 + key.charAt(c) - 33)%90;
                 c = (c+1)%kl;
-                //System.out.println("car1:"+car);
-                res += (char)(car);
+                res += (char)(car+33);
+                
+                if(car+33>122){
+                    System.out.println("STOP");
+                }
                 
             }
             res+=" ";
@@ -54,31 +55,39 @@ public class Vignere {
         for(String s: vec){
             int n = s.length();
             for(int i = 0; i < n; i++){
-               // System.out.println("s: "+s.charAt(i)+" k: "+key.charAt(c));
+                //System.out.println("s: "+s.charAt(i)+" k: "+key.charAt(c));
                 
-               
-                int car = s.charAt(i) -48- key.charAt(c);
-                
-                if(car<0){
-                    car+=74;
+                int car = s.charAt(i) - key.charAt(c);
+                if(car <0){
+                    car +=90;
                 }
+                car = car%90;
                 c = (c+1)%kl;
-                res+=(char)car;
-                //System.out.println("carD:"+car);
-                
+                res += (char)(car+33);
             }
             res+=" ";
         }
-        System.out.println(res);
+        //System.out.println(res);
         return res;
     }
     
-    
+    public static String decipher(File f, String key) throws FileNotFoundException{
+        
+        Scanner scan = new Scanner(f);
+        String res = "";
+        while(scan.hasNext()){
+            String linea = scan.nextLine();
+            String dec  = decipher(linea,key);
+            res += dec;
+            res +="\n";
+        }
+        return res;
+    }
     
     public static void main(String[] args) throws FileNotFoundException, IOException {
-        String k = cipher("Hola mundo! esto tiene muchos, signos.", "Fazd.");
-        String k2 = decipher(k,"Fazd.");
-        /*File f = new File("100P.txt");
+        //String k = cipher("Hola mundo! esto tiene muchos, signos.", "Fazd.");
+        //String k2 = decipher(k,"Fazd.");
+        File f = new File("100P.txt");
         Scanner scan = new Scanner(f);
         ArrayList<String> c = new ArrayList<>();
         while(scan.hasNext()){
@@ -91,8 +100,14 @@ public class Vignere {
         for(String s : c){
             bf.write(s);
             bf.newLine();
+            
         }
-        bf.close();  */ 
+        bf.close();
+        
+        
+       /* for(String s : c){
+           System.out.println(decipher(s,"Fazd"));
+        }*/
     }
     
 }

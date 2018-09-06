@@ -234,7 +234,7 @@
                 <StringItem index="1" value="Vigenere"/>
                 <StringItem index="2" value="RSA"/>
                 <StringItem index="3" value="AES"/>
-                <StringItem index="4" value="TwoFish"/>
+                <StringItem index="4" value="BlowFish"/>
               </StringArray>
             </Property>
           </Properties>
