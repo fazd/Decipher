@@ -5,25 +5,18 @@
  */
 package decipher;
 
+import java.awt.Desktop;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.security.InvalidKeyException;
 import java.security.Key;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
-import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.text.DocumentFilter;
 import javax.swing.text.PlainDocument;
 
 /**
@@ -36,31 +29,26 @@ public class Ventana extends javax.swing.JFrame {
      * Creates new form Ventana
      */
     private String op;
-    private File llavePublica;
-    private File llavePrivada;
+    private File llave;
     private File archivoEn;
 
     public Ventana() {
         initComponents();
         PlainDocument doc = (PlainDocument) texto.getDocument();
         doc.setDocumentFilter(new MyIntFilter());
-        llavePuB.setVisible(false);
-        llavePriB.setVisible(false);
-        privadaTF.setVisible(false);
-        llavePL.setVisible(false);
+        llaveP.setVisible(false);
         op = "Caesar";
         cifredJT.setLineWrap(true);
         decifredJT.setLineWrap(true);
     }
 
-    public void Write(File f) throws IOException{
+    public void Write(File f) throws IOException {
         BufferedWriter bf = new BufferedWriter(new FileWriter(f));
         String text = decifredJT.getText();
         bf.write(text);
         bf.close();
     }
-    
-    
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -76,7 +64,6 @@ public class Ventana extends javax.swing.JFrame {
         texto = new javax.swing.JTextField();
         tipoL = new javax.swing.JLabel();
         cargarB = new javax.swing.JButton();
-        llavePL = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         cifredJT = new javax.swing.JTextArea();
         jScrollPane2 = new javax.swing.JScrollPane();
@@ -85,10 +72,10 @@ public class Ventana extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         decifrarB = new javax.swing.JButton();
         textoCifrado = new javax.swing.JLabel();
-        llavePuB = new javax.swing.JButton();
+        llaveP = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
-        llavePriB = new javax.swing.JButton();
-        privadaTF = new javax.swing.JTextField();
+        jButton1 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -101,7 +88,6 @@ public class Ventana extends javax.swing.JFrame {
         jLabel4.setText("Texto Decifrado");
         jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(634, 197, -1, -1));
 
-        guardarB.setBackground(new java.awt.Color(206, 121, 40));
         guardarB.setForeground(new java.awt.Color(0, 0, 0));
         guardarB.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/download.png"))); // NOI18N
         guardarB.setText("Guardar");
@@ -114,14 +100,13 @@ public class Ventana extends javax.swing.JFrame {
 
         texto.setBackground(new java.awt.Color(255, 255, 255));
         texto.setForeground(new java.awt.Color(0, 0, 0));
-        jPanel1.add(texto, new org.netbeans.lib.awtextra.AbsoluteConstraints(566, 70, 134, -1));
+        jPanel1.add(texto, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 70, 130, -1));
 
         tipoL.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         tipoL.setForeground(new java.awt.Color(0, 0, 0));
         tipoL.setText("Longitud:");
         jPanel1.add(tipoL, new org.netbeans.lib.awtextra.AbsoluteConstraints(408, 73, -1, -1));
 
-        cargarB.setBackground(new java.awt.Color(206, 121, 40));
         cargarB.setForeground(new java.awt.Color(0, 0, 0));
         cargarB.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/upload.png"))); // NOI18N
         cargarB.setText("Cargar");
@@ -131,11 +116,6 @@ public class Ventana extends javax.swing.JFrame {
             }
         });
         jPanel1.add(cargarB, new org.netbeans.lib.awtextra.AbsoluteConstraints(104, 455, 133, -1));
-
-        llavePL.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
-        llavePL.setForeground(new java.awt.Color(0, 0, 0));
-        llavePL.setText("Llave privada");
-        jPanel1.add(llavePL, new org.netbeans.lib.awtextra.AbsoluteConstraints(408, 124, -1, -1));
 
         jScrollPane1.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
@@ -172,7 +152,6 @@ public class Ventana extends javax.swing.JFrame {
         jLabel2.setText("Tipo de cifrado");
         jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 73, 116, -1));
 
-        decifrarB.setBackground(new java.awt.Color(206, 121, 40));
         decifrarB.setForeground(new java.awt.Color(0, 0, 0));
         decifrarB.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/decipher.png"))); // NOI18N
         decifrarB.setText("Descifar");
@@ -188,33 +167,30 @@ public class Ventana extends javax.swing.JFrame {
         textoCifrado.setText("Textro Cifrado");
         jPanel1.add(textoCifrado, new org.netbeans.lib.awtextra.AbsoluteConstraints(181, 197, -1, -1));
 
-        llavePuB.setBackground(new java.awt.Color(206, 121, 40));
-        llavePuB.setForeground(new java.awt.Color(0, 0, 0));
-        llavePuB.setText("Selecc");
-        llavePuB.addActionListener(new java.awt.event.ActionListener() {
+        llaveP.setForeground(new java.awt.Color(0, 0, 0));
+        llaveP.setText("Selecc");
+        llaveP.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                llavePuBActionPerformed(evt);
+                llavePActionPerformed(evt);
             }
         });
-        jPanel1.add(llavePuB, new org.netbeans.lib.awtextra.AbsoluteConstraints(765, 67, 108, -1));
+        jPanel1.add(llaveP, new org.netbeans.lib.awtextra.AbsoluteConstraints(765, 67, 108, -1));
 
         jLabel1.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(0, 0, 0));
         jLabel1.setText("Descifrador de textos");
         jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(358, 6, -1, -1));
 
-        llavePriB.setBackground(new java.awt.Color(206, 121, 40));
-        llavePriB.setForeground(new java.awt.Color(0, 0, 0));
-        llavePriB.setText("Selecc");
-        llavePriB.addActionListener(new java.awt.event.ActionListener() {
+        jButton1.setText("Ayuda");
+        jPanel1.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 110, -1, -1));
+
+        jButton2.setText("Generar ");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                llavePriBActionPerformed(evt);
+                jButton2ActionPerformed(evt);
             }
         });
-        jPanel1.add(llavePriB, new org.netbeans.lib.awtextra.AbsoluteConstraints(765, 117, 108, -1));
-
-        privadaTF.setEditable(false);
-        jPanel1.add(privadaTF, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 120, 130, -1));
+        jPanel1.add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 110, -1, -1));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -245,10 +221,7 @@ public class Ventana extends javax.swing.JFrame {
                 tipoL.setText("Longitud");
                 texto.setText("");
                 doc.setDocumentFilter(new MyIntFilter());
-                llavePL.setVisible(false);
-                privadaTF.setVisible(false);
-                llavePriB.setVisible(false);
-                llavePuB.setVisible(false);
+                llaveP.setVisible(false);
                 texto.setEditable(true);
                 break;
 
@@ -257,48 +230,35 @@ public class Ventana extends javax.swing.JFrame {
                 tipoL.setText("Clave");
                 texto.setText("");
                 doc.setDocumentFilter(new MyStringFilter());
-                llavePL.setVisible(false);
-                privadaTF.setVisible(false);
-                llavePriB.setVisible(false);
-                llavePuB.setVisible(false);
+                llaveP.setVisible(false);
                 texto.setEditable(true);
                 break;
-                
-                
-            case "RSA": 
-                tipoL.setText("Llave publica");
+
+            case "RSA":
+                tipoL.setText("Llave privada");
                 texto.setText("");
-                llavePL.setVisible(true);
-                privadaTF.setVisible(true);
-                llavePriB.setVisible(true);
-                llavePuB.setVisible(true);
+                llaveP.setVisible(true);
                 texto.setEditable(false);
-                doc.setDocumentFilter(new MyStringFilter());
+                doc.setDocumentFilter(new DocumentFilter());
                 break;
-            
+
             case "AES":
                 tipoL.setText("Llave");
                 texto.setText("");
-                llavePL.setVisible(false);
-                privadaTF.setVisible(false);
-                llavePriB.setVisible(false);
-                llavePuB.setVisible(true);
+                llaveP.setVisible(true);
                 texto.setEditable(false);
-                texto = new JTextField();
-                
+                doc.setDocumentFilter(new DocumentFilter());
+
                 break;
-                
+
             case "BlowFish":
                 tipoL.setText("Clave");
                 texto.setText("");
-                doc.setDocumentFilter(new MyStringFilter());
-                llavePL.setVisible(false);
-                privadaTF.setVisible(false);
-                llavePriB.setVisible(false);
-                llavePuB.setVisible(false);
+                doc.setDocumentFilter(new DocumentFilter());
+                llaveP.setVisible(false);
                 texto.setEditable(true);
                 break;
-                
+
         }
     }//GEN-LAST:event_cifradoCBItemStateChanged
 
@@ -320,71 +280,60 @@ public class Ventana extends javax.swing.JFrame {
             case "Vigenere":
                 String key = texto.getText();
                 String dec = "";
-                if(archivoEn != null){
+                if (archivoEn != null) {
                     try {
                         dec = Vignere.decipher(archivoEn, key);
                     } catch (FileNotFoundException ex) {
-                        Logger.getLogger(Ventana.class.getName()).log(Level.SEVERE, null, ex);
+                        JOptionPane.showMessageDialog(this, "El archivo no se encuentra",
+                                "error", JOptionPane.ERROR_MESSAGE);
                     }
-                }
-                else{
+                } else {
                     dec = Vignere.decipher(k, key);
-                
+
                 }
                 decifredJT.setText(dec);
                 break;
 
             case "RSA":
-                if(llavePublica != null && llavePrivada != null){
+                if (llave != null) {
                     try {
-                        String mensaje = RSA2.decipher(archivoEn, llavePublica.getAbsolutePath() , llavePrivada.getAbsolutePath());
+                        String mensaje = Prueba.decrypt(archivoEn, llave);
                         decifredJT.setText(mensaje);
                     } catch (IOException ex) {
-                        Logger.getLogger(Ventana.class.getName()).log(Level.SEVERE, null, ex);
-                    } catch (NoSuchAlgorithmException ex) {
-                        Logger.getLogger(Ventana.class.getName()).log(Level.SEVERE, null, ex);
-                    } catch (InvalidKeySpecException ex) {
-                        Logger.getLogger(Ventana.class.getName()).log(Level.SEVERE, null, ex);
-                    } catch (NoSuchPaddingException ex) {
-                        Logger.getLogger(Ventana.class.getName()).log(Level.SEVERE, null, ex);
-                    } catch (InvalidKeyException ex) {
-                        Logger.getLogger(Ventana.class.getName()).log(Level.SEVERE, null, ex);
-                    } catch (IllegalBlockSizeException ex) {
-                        Logger.getLogger(Ventana.class.getName()).log(Level.SEVERE, null, ex);
-                    } catch (BadPaddingException ex) {
-                        Logger.getLogger(Ventana.class.getName()).log(Level.SEVERE, null, ex);
+                        JOptionPane.showMessageDialog(this, "El archivo no se encuentra",
+                                "error", JOptionPane.ERROR_MESSAGE);
                     }
-                }                
-            break;
-            
+                }
+                break;
+
             case "AES":
-                if(llavePublica != null){
+                if (llave != null) {
                     try {
-                            Key llave = AES.fileToKey(llavePublica);
-                            String mensaje = AES.decrypt(k, llave);
-                            decifredJT.setText(mensaje);
+                        Key key2 = AES.fileToKey(llave);
+                        String mensaje = AES.decrypt(k, key2);
+                        decifredJT.setText(mensaje);
                     } catch (FileNotFoundException ex) {
-                        Logger.getLogger(Ventana.class.getName()).log(Level.SEVERE, null, ex);
+                        JOptionPane.showMessageDialog(this,"El archivo no se encuentra",
+                                "error",JOptionPane.ERROR_MESSAGE);
                     } catch (Exception ex) {
-                        Logger.getLogger(Ventana.class.getName()).log(Level.SEVERE, null, ex);
+                        JOptionPane.showMessageDialog(this, "Se presentó un error descifrando","ERROR",
+                                JOptionPane.ERROR_MESSAGE);
                     }
                 }
                 break;
 
             case "BlowFish":
                 String ke = texto.getText();
-        
+
                 try {
                     String message = BlowFish.decrypt(k, ke);
                     decifredJT.setText(message);
                 } catch (Exception ex) {
-                    Logger.getLogger(Ventana.class.getName()).log(Level.SEVERE, null, ex);
+                    JOptionPane.showMessageDialog(this, "Se presentó un error descifrando","ERROR",
+                                JOptionPane.ERROR_MESSAGE);
                 }
                 break;
-        
-                
-            
-            
+
         }
 
     }//GEN-LAST:event_decifrarBActionPerformed
@@ -406,60 +355,108 @@ public class Ventana extends javax.swing.JFrame {
                 //info = info.replaceAll("(?!\\r)\\n", "\r\n");
                 cifredJT.setText(info);
                 archivoEn = f;
-               
+
                 //cifredJT.append(info);
             } catch (FileNotFoundException ex) {
-                Logger.getLogger(Ventana.class.getName()).log(Level.SEVERE, null, ex);
+                JOptionPane.showMessageDialog(this,"El archivo no se encuentra",
+                                "error",JOptionPane.ERROR_MESSAGE);
             }
 
         }
 
     }//GEN-LAST:event_cargarBActionPerformed
 
-    private void llavePuBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_llavePuBActionPerformed
+    private void llavePActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_llavePActionPerformed
         JFileChooser jc = new JFileChooser();
-        FileNameExtensionFilter filter = new FileNameExtensionFilter("Solo .pub", "pub");
+        FileNameExtensionFilter filter;
+        if (op.equals("RSA")) {
+            filter = new FileNameExtensionFilter("Solo .pri", "pri");
+        } else {
+            filter = new FileNameExtensionFilter("Solo .pub", "pub");
+        }
         jc.setFileFilter(filter);
         int i = jc.showOpenDialog(this);
-        if (i == JFileChooser.APPROVE_OPTION){
+        if (i == JFileChooser.APPROVE_OPTION) {
             File f = jc.getSelectedFile();
-            llavePublica = f;
+            llave = f;
             texto.setText(f.getAbsolutePath());
             System.out.println(f.getAbsolutePath());
         }
-        
-    }//GEN-LAST:event_llavePuBActionPerformed
 
-    private void llavePriBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_llavePriBActionPerformed
-        JFileChooser jc = new JFileChooser();
-        FileNameExtensionFilter filter = new FileNameExtensionFilter("Solo .pri", "pri");
-        jc.setFileFilter(filter);
-        int i = jc.showOpenDialog(this);
-        if (i == JFileChooser.APPROVE_OPTION){
-            File f = jc.getSelectedFile();
-            llavePrivada = f;
-            privadaTF.setText(f.getAbsolutePath());
-            System.out.println(f.getAbsolutePath());
-        }
-        
-    }//GEN-LAST:event_llavePriBActionPerformed
+    }//GEN-LAST:event_llavePActionPerformed
 
     private void guardarBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_guardarBActionPerformed
         JFileChooser jc = new JFileChooser();
         int i = jc.showSaveDialog(this);
-        if(i == JFileChooser.APPROVE_OPTION){
+        if (i == JFileChooser.APPROVE_OPTION) {
             try {
                 String path = jc.getCurrentDirectory().getAbsolutePath();
-                path+= "\\"+"decifrado.txt";
+                path += "\\" + "decifrado.txt";
                 File f = new File(path);
                 Write(f);
-                JOptionPane.showMessageDialog(this,"El archivo se ha guardado exitosamente");
+                JOptionPane.showMessageDialog(this, "El archivo se ha guardado exitosamente");
             } catch (IOException ex) {
-                Logger.getLogger(Ventana.class.getName()).log(Level.SEVERE, null, ex);
+                JOptionPane.showMessageDialog(this,"El archivo no se puede sobreescribir",
+                                "error",JOptionPane.ERROR_MESSAGE);
             }
         }
-        
+
     }//GEN-LAST:event_guardarBActionPerformed
+
+    public void putText() throws FileNotFoundException {
+        File f = null;
+        switch (op) {
+            case "Caesar":
+                f = new File("cifred100PCaesar.txt");
+                texto.setText("10");
+                break;
+
+            case "Vigenere":
+                f = new File("cifred100PVigenere.txt");
+                texto.setText("Fazd");
+                break;
+
+            case "RSA":
+                f = new File("cifred100PRSA.txt");
+                break;
+
+            case "AES":
+                f = new File("100PAES.txt");
+                break;
+
+            case "BlowFish":
+                f = new File("cifred100PBlow.txt");
+                break;
+
+        }
+        write(f);
+    }
+
+    public void write(File f) throws FileNotFoundException {
+        Scanner s = new Scanner(f);
+        String res = "";
+        while (s.hasNext()) {
+            String linea = s.nextLine();
+            res += linea;
+        }
+        cifredJT.setText(res);
+
+    }
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        File f = new File("100P.txt");
+        Desktop desktop = Desktop.getDesktop();
+        if (f.exists()) {
+            try {
+                desktop.open(f);
+                putText();
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(this, "El archivo no se puede abrir",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+
+    }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -503,16 +500,15 @@ public class Ventana extends javax.swing.JFrame {
     private javax.swing.JButton decifrarB;
     private javax.swing.JTextArea decifredJT;
     private javax.swing.JButton guardarB;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JLabel llavePL;
-    private javax.swing.JButton llavePriB;
-    private javax.swing.JButton llavePuB;
-    private javax.swing.JTextField privadaTF;
+    private javax.swing.JButton llaveP;
     private javax.swing.JTextField texto;
     private javax.swing.JLabel textoCifrado;
     private javax.swing.JLabel tipoL;

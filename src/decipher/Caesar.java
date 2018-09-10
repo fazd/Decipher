@@ -60,7 +60,7 @@ public class Caesar {
             c.add(Cipher(line,10));
         }
         
-        File f2 = new File("cifred10PCaesar.txt");
+        File f2 = new File("cifred100PCaesar.txt");
         BufferedWriter bf = new BufferedWriter(new FileWriter(f2));
         for(String s : c){
             bf.write(s);
